@@ -189,7 +189,7 @@ class GazelleAPI(object):
 
     def get_torrent(self, id):
         """
-        Returns a TorrentGroup for the passed ID, associated with this API object.
+        Returns a Torrent for the passed ID, associated with this API object.
         """
         id = int(id)
         if id in self.cached_torrents.keys():
@@ -209,6 +209,43 @@ class GazelleAPI(object):
         if name:
             cat.name = name
         return cat
+
+    def get_top_10(self, type="torrents", limit=25):
+        """
+        Lists the top <limit> items of <type>. Type can be "torrents", "tags", or "users". Limit MUST be
+        10, 25, or 100...it can't just be an arbitrary number (unfortunately). Results are organized into a list of hashes.
+        Each hash contains the results for a specific time frame, like 'day', or 'week'. In the hash, the 'results' key
+        contains a list of objects appropriate to the passed <type>.
+        """
+
+        response = self.request(action='top10', type=type, limit=limit)
+        top_items = []
+        for category in response:
+            results = []
+            if type == "torrents":
+                for item in category['results']:
+                    torrent = self.get_torrent(item['torrentId'])
+                    torrent.set_torrent_top_10_data(item)
+                    results.append(torrent)
+            elif type == "tags":
+                for item in category['results']:
+                    tag = self.get_tag(item['name'])
+                    results.append(tag)
+            elif type == "users":
+                for item in category['results']:
+                    user = self.get_user(item['id'])
+                    results.append(user)
+            else:
+                raise Exception("%s is an invalid type argument for GazelleAPI.get_top_ten()" % type)
+
+            top_items.append({
+                "caption": category['caption'],
+                "tag": category['tag'],
+                "limit": category['limit'],
+                "results": results
+            })
+
+        return top_items
 
     def search_torrents(self, **kwargs):
         """

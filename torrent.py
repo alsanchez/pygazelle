@@ -118,6 +118,24 @@ class Torrent(object):
         self.free_torrent = search_torrent_json_response['isFreeleech'] or search_torrent_json_response['isPersonalFreeleech']
         self.time = search_torrent_json_response['time']
 
+    def set_torrent_top_10_data(self, top_10_json_response):
+        if self.id != top_10_json_response['torrentId']:
+            raise InvalidTorrentException("Tried to update a Torrent's information from a 'browse'/search API call with a different id." +
+                                          " Should be %s, got %s" % (self.id, top_10_json_response['torrentId']) )
+
+        # TODO: Add conditionals to handle torrents that aren't music
+        self.group = self.parent_api.get_torrent_group(top_10_json_response['groupId'])
+        self.group.name = top_10_json_response['groupName']
+        self.remaster_title = top_10_json_response['remasterTitle']
+        self.media = top_10_json_response['media']
+        self.format = top_10_json_response['format']
+        self.encoding = top_10_json_response['encoding']
+        self.has_log = top_10_json_response['hasLog']
+        self.has_cue = top_10_json_response['hasCue']
+        self.scene = top_10_json_response['scene']
+        self.seeders = top_10_json_response['seeders']
+        self.leechers = top_10_json_response['leechers']
+        self.snatched = top_10_json_response['snatched']
 
 
     def __repr__(self):
