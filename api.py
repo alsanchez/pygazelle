@@ -17,6 +17,7 @@ from request import Request
 from torrent_group import TorrentGroup
 from torrent import Torrent
 from category import Category
+from inbox import Mailbox
 
 class LoginException(Exception):
     pass
@@ -92,7 +93,7 @@ class GazelleAPI(object):
         except ValueError:
             raise RequestException
 
-    def unparsed_request(self, page, action, **kwargs):
+    def unparsed_request(self, sitepage, action, **kwargs):
         """
         Makes a generic HTTP request at a given page with a given action.
         Also pass relevant arguments for that action.
@@ -100,7 +101,7 @@ class GazelleAPI(object):
         while time.time() - self.last_request < self.rate_limit:
             time.sleep(0.1)
 
-        url = "%s/%s" % (self.site, page)
+        url = "%s/%s" % (self.site, sitepage)
         params = {'action': action}
         if self.authkey:
             params['auth'] = self.authkey
@@ -140,6 +141,18 @@ class GazelleAPI(object):
             found_users.append(user)
 
         return found_users
+
+    def get_inbox(self, page='1', sort='unread'):
+        """
+        Returns the inbox Mailbox for the logged in user
+        """
+        return Mailbox(self, 'inbox', page, sort)
+        
+    def get_sentbox(self, page='1', sort='unread'):
+        """
+        Returns the sentbox Mailbox for the logged in user
+        """
+        return Mailbox(self, 'sentbox', page, sort)
 
     def get_artist(self, id, name=None):
         """
