@@ -41,7 +41,8 @@ class GazelleAPI(object):
 
 
     def __init__(self, username=None, password=None):
-        self.session = requests.session(headers=self.default_headers)
+        self.session = requests.session()
+        self.session.headers = self.default_headers
         self.username = username
         self.password = password
         self.authkey = None
