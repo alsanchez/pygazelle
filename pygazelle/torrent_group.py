@@ -1,4 +1,4 @@
-from torrent import Torrent
+from .torrent import Torrent
 
 class InvalidTorrentGroupException(Exception):
     pass

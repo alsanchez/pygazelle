@@ -10,14 +10,14 @@ import json
 import time
 import requests
 
-from user import User
-from artist import Artist
-from tag import Tag
-from request import Request
-from torrent_group import TorrentGroup
-from torrent import Torrent
-from category import Category
-from inbox import Mailbox
+from .user import User
+from .artist import Artist
+from .tag import Tag
+from .request import Request
+from .torrent_group import TorrentGroup
+from .torrent import Torrent
+from .category import Category
+from .inbox import Mailbox
 
 class LoginException(Exception):
     pass
