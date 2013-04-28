@@ -6,6 +6,7 @@
 # Loosely based on the API implementation from 'whatbetter', by Zachary Denton
 # See https://github.com/zacharydenton/whatbetter
 
+import sys
 import json
 import time
 import requests
@@ -87,6 +88,8 @@ class GazelleAPI(object):
         ajaxpage = 'ajax.php'
         content = self.unparsed_request(ajaxpage, action, **kwargs)
         try:
+            if not isinstance(content, text_type):
+                content = content.decode('utf-8')
             parsed = json.loads(content)
             if parsed['status'] != 'success':
                 raise RequestException
@@ -332,3 +335,8 @@ class GazelleAPI(object):
             id=id, authkey=self.logged_in_user.authkey, torrent_pass=self.logged_in_user.passkey)
         with open(dest, 'w+') as dest_file:
             dest_file.write(file_data)
+
+if sys.version_info[0] == 3:
+    text_type = str
+else:
+    text_type = unicode
